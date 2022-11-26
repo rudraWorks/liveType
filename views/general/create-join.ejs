@@ -1,0 +1,16 @@
+<%- include('../partials/upper.ejs') %>
+
+<h1>Create/Join Room</h1>
+
+<br>
+<center>
+    <form action="/join" method="GET">
+        <input type="text" name="username" placeholder="username..">
+        <br>
+        <input type="text" name="room" placeholder="room..">
+        <br>
+        <input type="submit">
+    </form>
+</center>
+
+<%- include('../partials/lower.ejs') %>

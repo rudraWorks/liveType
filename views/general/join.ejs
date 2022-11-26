@@ -1,0 +1,192 @@
+<%- include('../partials/upper.ejs') %>
+
+<style>
+    #roomContainer{
+        background:wheat;
+        width: 100%;
+        height: 100%;
+        display: flex;
+
+    }
+    #leftPanel{
+        width: 30%;
+        border-right: 1px solid black;
+    }
+    fieldset{
+        width: 90%;
+    }
+    #testPara{
+        width: 90%;
+        min-height: 100px;
+        border: 1px solid black;
+        height: fit-content;
+        text-align: left;
+        user-select: none;
+    }
+    #rightPanel{
+        margin-top: 10px;
+        display: flex;
+        align-items: center;
+        width: 70%;
+        flex-direction: column;
+    }
+    #rightPanel>div{
+        margin-bottom: 10px;
+
+    }
+    progress{
+        width: 300px;
+        height: 40px;
+        margin-left: auto;
+    }
+    #progress>div{
+        display: flex;
+        margin: 20px;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+    }
+    #progress>div>span{
+        width: 30%;
+        font-weight: 900;
+        font-size: 20px;
+    }
+    #liveTyping{
+        margin-bottom: 10px;
+        text-align: left;
+        border: 1px solid black;
+        height: fit-content;
+        word-wrap: break-word;
+        word-break: break-all;
+    }
+    #myTyping{
+        width: 90%;
+    }
+ 
+</style>
+
+<div id="roomContainer">
+
+    <div id="leftPanel">
+        <div id="roomName"></div>
+        <hr>
+        <br>
+      
+        <div id="allUsers" style="word-break: break-all;"></div>
+        
+    </div>
+    <div id="rightPanel">
+        <div id="winOrLose"></div>
+        <div id="progress">
+            <div>
+                <span>You</span> <progress id="myProgressBar" value="0" min="0" max="100"></progress>
+            </div>
+            <div>
+                <span>Opponent</span> <progress id="opponentProgressBar" value="0" min="0" max="100"></progress>
+            </div>
+        </div>
+
+        <div id="testPara">this is test para</div>
+
+        <div id="myTyping">
+             <div id="liveTyping"></div>
+            <textarea disabled  placeholder="type here.." name="" id="typingTextarea" cols="67" rows="6" style="resize: vertical;padding:5px;"></textarea>
+        </div>
+        <div>
+            <button id="startBtn" onclick="startTest()" style="width: 100px;">Start test</button>
+        </div>
+    </div>
+</div>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qs/6.11.0/qs.min.js" integrity="sha512-/l6vieC+YxaZywUhmqs++8uF9DeMvJE61ua5g+UK0TuHZ4TkTgB1Gm1n0NiA86uEOM9JJ6JUwyR0hboKO0fCng==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+<script>
+    const {username,room} = Qs.parse(location.search,{ignoreQueryPrefix:true})
+    // alert(username+" "+room)
+
+    let typingTextarea = document.getElementById('typingTextarea')
+    let liveTyping = document.getElementById('liveTyping')
+    let startBtn = document.getElementById('startBtn')
+    let testPara = document.getElementById('testPara')
+    let myProgressBar = document.getElementById('myProgressBar')
+    let opponentProgressBar = document.getElementById('opponentProgressBar')
+
+    const socket =  io();
+
+    socket.emit('join',{username,room},(error)=>{
+        if(error){
+            alert(error.error)
+            location.href='/'
+        }
+    })
+
+    socket.on('updateRoomInfo',(roomInfo,userInRoom)=>{
+       
+        document.getElementById('roomName').innerHTML="<h1>"+roomInfo.room+"</h1>"
+        if(userInRoom.length==1)
+        document.getElementById('allUsers').innerHTML="<br><fieldset><h3>"+userInRoom[0].username+"</h3></fieldset>"
+        else  document.getElementById('allUsers').innerHTML="<br><fieldset><h3>"+userInRoom[0].username+"</h3></fieldset><br><fieldset><h3>"+userInRoom[1].username+"</h3></fieldset>"
+    })
+
+    function startTest(){
+        socket.emit('startTest')
+
+    }
+
+    typingTextarea.addEventListener('input',()=>{
+
+        let p=""
+        let typingSoFar = typingTextarea.value.toString().trim()
+        let testParaString = testPara.textContent
+        let mn=typingSoFar.length 
+        if(testParaString.length<mn)
+            mn=testParaString.length
+        for(let i=0;i<mn;++i){
+            if(typingSoFar[i]!=testParaString[i]){
+                p=p+"<span style='background:black;color:white;'>"+typingSoFar[i]+"</span>";
+            }
+            else p+=typingSoFar[i]
+        }
+        liveTyping.innerHTML=p
+        socket.emit('updateLiveTyping',typingSoFar)
+
+        
+    })
+
+    socket.on('clear',()=>{
+        myProgressBar.value="0"
+        opponentProgressBar.value="0"
+        testPara.textContent=""
+        liveTyping.textContent=""
+        typingTextarea.value=""
+        document.getElementById("winOrLose").innerHTML=""
+        typingTextarea.disabled=false
+    })
+
+    socket.on('updateTestPara',(msg)=>{
+       
+        testPara.innerHTML=msg
+    })
+
+    socket.on('updateOpponentProgress',(opponentScore)=>{
+        console.log(opponentScore)
+        opponentProgressBar.value=opponentScore
+    })
+
+    socket.on('updateMyProgress',(myScore)=>{
+        myProgressBar.value=myScore
+    })
+
+    socket.on('lose',()=>{
+        typingTextarea.disabled=true
+        document.getElementById('winOrLose').innerHTML="<h1>You lose :(</h1>"
+    })
+
+    socket.on('win',()=>{
+        typingTextarea.disabled=true
+        document.getElementById('winOrLose').innerHTML="<h1>You win :)</h1>"
+    })
+
+</script>
+<%- include('../partials/lower.ejs') %>

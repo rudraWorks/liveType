@@ -1,0 +1,20 @@
+*{
+    padding: 0px;
+    box-sizing: border-box;
+    margin: 0px;
+}
+body{
+    background-color: gray;
+    height: 100%;
+}
+
+#mainContainer{
+    width: 80%;
+    background-color: aliceblue;
+    height: 100vh;
+}
+#navBar{
+    height: 50px;
+    width: 100%;
+    background-color: black;
+}
