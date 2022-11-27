@@ -54,7 +54,7 @@ io.on('connection',(socket)=>{
             for(let i=0;i<noOfWords;++i) 
                 p+=words[randomIntFromInterval(0,words.length-1)]+" ";
             p = p.trim()
-            testPara = p 
+            testPara = p  
             io.to(getUser(socket.id).room).emit('updateTestPara',testPara)
         })
 
