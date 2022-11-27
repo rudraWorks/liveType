@@ -14,8 +14,8 @@ let testPara=""
 function randomIntFromInterval(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
-
-app.set('view engine','ejs')
+   
+app.set('view engine','ejs') 
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(express.static(__dirname+"/public"))
@@ -40,28 +40,28 @@ io.on('connection',(socket)=>{
             return callback({error:'this room is full'})
         }
         
-        socket.join(room)
+        socket.join(room) 
         // console.log(username+" "+room)
-        let t=getUser(socket.id)
+        let t=getUser(socket.id) 
         // console.log(t)
         let userInRoom = getUsersInRoom(t.room)
         io.to(t.room).emit('updateRoomInfo',t,userInRoom)
-
-        socket.on('startTest',()=>{
-            // console.log(socket.id)
+ 
+        socket.on('startTest',(noOfWords)=>{   
+            // console.log(socket.id) 
             io.to(getUser(socket.id).room).emit('clear')
-            let p="";
-            for(let i=0;i<30;++i)
+            let p="";  
+            for(let i=0;i<noOfWords;++i) 
                 p+=words[randomIntFromInterval(0,words.length-1)]+" ";
             p = p.trim()
-            testPara = p
+            testPara = p 
             io.to(getUser(socket.id).room).emit('updateTestPara',testPara)
         })
 
-        socket.on('updateLiveTyping',(userPara)=>{
+        socket.on('updateLiveTyping',(userPara)=>{ 
             let score=0
             let totalScore=testPara.length
-            let mn=userPara.length
+            let mn=userPara.length      
             if(testPara.length<mn)
                 mn=testPara.length
             for(let i=0;i<mn;++i){
@@ -75,12 +75,17 @@ io.on('connection',(socket)=>{
             score=100*(score/totalScore)
             socket.broadcast.to(getUser(socket.id).room).emit('updateOpponentProgress',score)
             socket.emit('updateMyProgress',score)
-
+ 
         })
     }) 
+    // socket.on('disconnect',()=>{           
+    //     let user = removeUser(socket.id)
+    //     let userInRoom = getUsersInRoom(user.room)
+    //     io.to(user.room).emit('updateRoomInfo',user,userInRoom)
+    // })
 })     
 
-let port = process.env.PORT || 3000
+let port = process.env.PORT || 3000     
 server.listen(port,()=>{
-    console.log('listening to port '+port)
+    console.log('listening to port '+port) 
 })
