@@ -64,7 +64,7 @@
     #myTyping{
         width: 90%;
     }
-    textarea{
+    #typingTextarea{
         font-size: 20px;
     }
 </style>
@@ -81,6 +81,19 @@
             <div style="display: flex;">My victories <input  style="width:100px ;margin-left: auto;" disabled type="number" id="myWins"></div>
             <hr>
             <div style="display: flex;">Opponent victories <input style="width:100px ;margin-left: auto;" disabled type="number" id="opponentWins">
+            </div>
+        </div>
+
+        <div id="chats" style="display: flex;flex-direction:column;width: 90%;margin-top: 20px;border: 1px solid black;">
+            <h3>Quick chat</h3>
+            <hr>
+
+            <textarea id="chatMessage" placeholder="your message.." style="height: 50px;padding: 5px;"></textarea>
+            <button onclick="sendMessage(document.getElementById('chatMessage').value,document.getElementById('chatMessage'))">send</button>
+            <div id="messages" style="display: flex;flex-direction:column;overflow-y: scroll;height: 200px;">
+                <ul id="messagesList">
+
+                </ul>
             </div>
         </div>
         
@@ -146,7 +159,7 @@
     socket.on('updateRoomInfo',(roomInfo,userInRoom)=>{
        
         document.getElementById('roomName').innerHTML="<h1>"+roomInfo.room+"</h1>"
-        if(userInRoom.length==1 && roomInfo.id==socket.id)
+        if(userInRoom.length==1)
         document.getElementById('allUsers').innerHTML="<br><fieldset style='background:yellow;'><h3>"+userInRoom[0].username+"</h3></fieldset>"
         else  {
             if(userInRoom[0].id==socket.id)
@@ -191,7 +204,7 @@
         }
         
         testPara.innerHTML=q
-        socket.emit('updateLiveTyping',typingSoFar)
+        socket.emit('updateLiveTyping',typingSoFar,testParaString)
 
         
     })
@@ -220,6 +233,7 @@
     })
 
     socket.on('updateMyProgress',(myScore)=>{
+        
         myProgressBar.value=myScore
     })
 
@@ -237,5 +251,33 @@
         document.getElementById('winOrLose').innerHTML="<h1>You win :)</h1>"
     })
 
+    socket.on('disconnected',(msg)=>{
+        opponentWins.value="0"
+        myWins.value="0"
+        alert(msg)
+    })
+
+    socket.on('connected',(msg)=>{
+        opponentWins.value="0"
+        myWins.value="0"
+        alert(msg)
+    })
+
+
+    function sendMessage(msg,msgBox){
+        msgBox.value=""
+        msg=msg.trim()
+        if(msg=="")return alert('message must not be blank!')
+        socket.emit('sendMessage',msg,socket.id)
+    }
+
+    socket.on('showMessage',(msg,userInfo)=>{
+        let li = document.createElement('li')
+        li.textContent=msg
+        if(userInfo.id==socket.id)
+        li.style.background="lightgreen"
+        li.style.textAlign="left"
+        document.getElementById('messagesList').prepend(li);
+    })
 </script>
 <%- include('../partials/lower.ejs') %>

@@ -10,7 +10,6 @@ const server = http.createServer(app)
 const io = socketio(server) 
 
 const words = ["the","of","and","a","to","in","is","you","that","it","he","was","for","on","are","as","with","his","they","I","at","be","this","have","from","or","one","had","by","word","but","not","what","all","were","we","when","your","can","said","there","use","an","each","which","she","do","how","their","if","will","up","other","about","out","many","then","them","these","so","some","her","would","make","like","him","into","time","has","look","two","more","write","go","see","number","no","way","could","people","my","than","first","water","been","call","who","oil","its","now","find","long","down","day","did","get","come","made","may","part"];
-let testPara=""
 function randomIntFromInterval(min, max) { // min and max included 
     return Math.floor(Math.random() * (max - min + 1) + min)
 }
@@ -26,10 +25,12 @@ app.use(generalRouter)
 io.on('connection',(socket)=>{
 
     // io.emit('test','hi')
-    socket.on('join',({username,room},callback)=>{
+    socket.on('join', ({username,room},callback)=>{
         username=username.trim()
         room=room.trim()
-
+        if(room=="" || username==""){
+           return  callback({error:"input fields can not be empty!"})
+        }
         const isAdded = addUser(socket.id,username,room)
         const roomLength = getUsersInRoom(room).length
         if(isAdded==0)
@@ -39,6 +40,9 @@ io.on('connection',(socket)=>{
         if(roomLength>2){
             return callback({error:'this room is full'})
         }
+
+        let testPara=""
+
         
         socket.join(room) 
         // console.log(username+" "+room)
@@ -46,6 +50,7 @@ io.on('connection',(socket)=>{
         // console.log(t)
         let userInRoom = getUsersInRoom(t.room)
         io.to(t.room).emit('updateRoomInfo',t,userInRoom)
+        socket.broadcast.to(t.room).emit('connected',t.username+" joined the room!")
  
         socket.on('startTest',(noOfWords)=>{   
             // console.log(socket.id) 
@@ -58,8 +63,9 @@ io.on('connection',(socket)=>{
             io.to(getUser(socket.id).room).emit('updateTestPara',testPara)
         })
 
-        socket.on('updateLiveTyping',(userPara)=>{ 
+        socket.on('updateLiveTyping',(userPara,testParaF)=>{ 
             let score=0
+            testPara=testParaF
             let totalScore=testPara.length
             let mn=userPara.length      
             if(testPara.length<mn)
@@ -75,17 +81,25 @@ io.on('connection',(socket)=>{
             score=100*(score/totalScore)
             socket.broadcast.to(getUser(socket.id).room).emit('updateOpponentProgress',score)
             socket.emit('updateMyProgress',score)
- 
+            // console.log(userPara+" - "+testPara)
+        })
+
+        socket.on('sendMessage',(msg,id)=>{
+            let t=getUser(id)
+            io.to(t.room).emit('showMessage',msg,t)
         })
     }) 
-    // socket.on('disconnect',()=>{           
-    //     let user = removeUser(socket.id)
-    //     let userInRoom = getUsersInRoom(user.room)
-    //     io.to(user.room).emit('updateRoomInfo',user,userInRoom)
-    // })
+    socket.on('disconnect',()=>{           
+        let user = removeUser(socket.id)
+        let userInRoom = getUsersInRoom(user.room)
+      
+        io.to(user.room).emit('updateRoomInfo',user,userInRoom)
+        io.to(user.room).emit('disconnected',user.username+" left the room!")
+    })
+
 })     
 
 let port = process.env.PORT || 3000     
-server.listen(port,()=>{
+server.listen(port,()=>{ 
     console.log('listening to port '+port) 
 })
