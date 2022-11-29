@@ -61,7 +61,7 @@ io.on('connection',(socket)=>{
                 p+=words[randomIntFromInterval(0,words.length-1)]+" ";
             p = p.trim()
             testPara = p  
-            io.to(getUser(socket.id).room).emit('updateTestPara',testPara)
+            io.to(getUser(socket.id).room).emit('updateTestPara',testPara,noOfWords)
         })
 
         socket.on('updateLiveTyping',(userPara,testParaF)=>{ 

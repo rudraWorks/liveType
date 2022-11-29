@@ -33,6 +33,7 @@
         align-items: center;
         width: 70%;
         flex-direction: column;
+        
     }
     #rightPanel>div{
         margin-bottom: 10px;
@@ -131,6 +132,7 @@
         </div>
         <div id="loadingGIF"  style="border-style: groove;background-color: yellow;vertical-align: middle;position:absolute;top: 30%;display: none;">
             <h1>Get ready!!</h1>
+            <span style="font-weight: 100;font-size:larger;" id="noOfWords"></span><br>
             <img src="https://media.tenor.com/G7LfW0O5qb8AAAAC/loading-gif.gif" width="200" height="200"  alt="">
         </div>
     </div>
@@ -231,8 +233,7 @@
             liveTyping.textContent=""
             typingTextarea.value=""
             document.getElementById("winOrLose").innerHTML=""
-            typingTextarea.disabled=false
-            typingTextarea.focus()
+
         // }, 10);
 
     })
@@ -242,12 +243,14 @@
     let btn3=document.getElementById('btn3')
     let btn4=document.getElementById('btn4')
 
-    socket.on('updateTestPara',async (msg)=>{
+    socket.on('updateTestPara',async (msg,noOfWords)=>{
     
             btn1.disabled=true
             btn2.disabled=true
             btn3.disabled=true 
             btn4.disabled=true
+            typingTextarea.disabled=true
+            document.getElementById('noOfWords').textContent=noOfWords+" words"
             document.getElementById('loadingGIF').style.display="block"
         await setTimeout(() => {
             testPara.innerHTML=msg
@@ -256,6 +259,8 @@
             btn3.disabled=false 
             btn4.disabled=false
             document.getElementById('loadingGIF').style.display="none"
+            typingTextarea.disabled=false
+            typingTextarea.focus()
 
         }, 2500);
 
