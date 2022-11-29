@@ -2,7 +2,7 @@
 
 <style>
     #roomContainer{
-        background:wheat;
+        background:#9eab92;
         width: 100%;
         height: 100%;
         display: flex;
@@ -10,7 +10,8 @@
     }
     #leftPanel{
         width: 30%;
-        border-right: 1px solid black;
+        border-right: 2px solid rgb(243, 233, 233);
+        background-color: rgb(204, 183, 183);
     }
     fieldset{
         width: 90%;
@@ -18,12 +19,13 @@
     #testPara{
         width: 90%;
         min-height: 100px;
-        border: 1px solid black;
+
+        border-style: groove;
         height: fit-content;
         text-align: left;
         user-select: none;
         font-size: larger;
-        background-color: rgb(211, 169, 169);
+        background-color: lightgreen;
 ]    }
     #rightPanel{
         margin-top: 10px;
@@ -56,7 +58,8 @@
     #liveTyping{
         margin-bottom: 10px;
         text-align: left;
-        border: 1px solid black;
+        border-style: groove;
+
         height: fit-content;
         word-wrap: break-word;
         word-break: break-all;
@@ -67,6 +70,7 @@
     #typingTextarea{
         font-size: 20px;
     }
+    
 </style>
 
 <div id="roomContainer">
@@ -77,17 +81,20 @@
         <br>
       
         <div id="allUsers" style="word-break: break-all;"></div>
-        <div id="scores" style="padding: 5px;border: 1px solid black;margin-top: 50px;display: flex;justify-content: center;flex-direction: column;width: 90%;">
+        <div id="scores" style="padding: 5px;        border-style: groove ;margin-top: 50px;display: flex;justify-content: center;flex-direction: column;width: 90%;">
             <div style="display: flex;">My victories <input  style="width:100px ;margin-left: auto;" disabled type="number" id="myWins"></div>
             <hr>
             <div style="display: flex;">Opponent victories <input style="width:100px ;margin-left: auto;" disabled type="number" id="opponentWins">
             </div>
         </div>
-
-        <div id="chats" style="display: flex;flex-direction:column;width: 90%;margin-top: 20px;border: 1px solid black;">
-            <h3>Quick chat</h3>
+<br>
             <hr>
+            <span>Quick chat</span>
 
+        <div id="chats" style="display: flex;flex-direction:column;width: 90%;margin-top: 20px; background-color: #dae1e95e;       border-style: groove;
+        ">
+            
+            
             <textarea id="chatMessage" placeholder="your message.." style="height: 50px;padding: 5px;"></textarea>
             <button onclick="sendMessage(document.getElementById('chatMessage').value,document.getElementById('chatMessage'))">send</button>
             <div id="messages" style="display: flex;flex-direction:column;overflow-y: scroll;height: 200px;">
@@ -105,22 +112,26 @@
                 <span>You</span> <progress id="myProgressBar" value="0" min="0" max="100"></progress>
             </div>
             <div>
-                <span>Opponent</span> <progress id="opponentProgressBar" value="0" min="0" max="100"></progress>
+                <span>Opponent</span>  <progress id="opponentProgressBar" value="0" min="0" max="100"></progress>
             </div>
         </div>
 
         <div id="testPara"></div>
 
         <div id="myTyping">
-             <div id="liveTyping"></div>
+             <div id="liveTyping" style="display: none ;"></div>
             <textarea disabled  placeholder="type here.." name="" id="typingTextarea" cols="30" rows="6" style="resize: vertical;padding:5px;"></textarea>
         </div>
         <div>
-            <button  onclick="startTest10()" style="width: 100px;">10 words</button>
-            <button  onclick="startTest30()" style="width: 100px;">30 words</button>
-            <button  onclick="startTest50()" style="width: 100px;">50 words</button>
-            <button  onclick="startTest70()" style="width: 100px;">70 words</button>
+            <button id="btn1"  onclick="startTest10()" style="width: 100px;">10 words</button>
+            <button id="btn2" onclick="startTest30()" style="width: 100px;">30 words</button>
+            <button id="btn3" onclick="startTest50()" style="width: 100px;">50 words</button>
+            <button id="btn4" onclick="startTest70()" style="width: 100px;">70 words</button>
 
+        </div>
+        <div id="loadingGIF"  style="border-style: groove;background-color: yellow;vertical-align: middle;position:absolute;top: 30%;display: none;">
+            <h1>Get ready!!</h1>
+            <img src="https://media.tenor.com/G7LfW0O5qb8AAAAC/loading-gif.gif" width="200" height="200"  alt="">
         </div>
     </div>
 </div>
@@ -147,7 +158,8 @@
     let myWinsCount=0
     let opponentWinsCount=0
 
-    const socket =  io();
+    // const socket =  io();
+    var socket = io({transports: ['websocket'], upgrade: false})
 
     socket.emit('join',{username,room},(error)=>{
         if(error){
@@ -194,10 +206,10 @@
         for(let i=0;i<testParaString.length;++i){
 
             if( i<typingSoFar.length && typingSoFar[i]!=testParaString[i]){
-                q=q+"<span style='background:red;color:white;font-weight:900;'>"+testParaString[i]+"</span>"
+                q=q+"<span style='background:red;color:white;'>"+testParaString[i]+"</span>"
 
             }
-            else if(i<typingSoFar.length)q+="<span style='background:yellow;color:black;'>"+testParaString[i]+"</span>";
+            else if(i<typingSoFar.length)q+="<span style='background:#6fbb6f ;color:black;'>"+testParaString[i]+"</span>";
             
             else q+="<span style='background:tranparent;color:black;'>"+testParaString[i]+"</span>";
             
@@ -212,28 +224,49 @@
    
     socket.on('clear',async()=>{
 
-        myProgressBar.value="0"
-        opponentProgressBar.value="0"
-        testPara.textContent=""
-        liveTyping.textContent=""
-        typingTextarea.value=""
-        document.getElementById("winOrLose").innerHTML=""
-        typingTextarea.disabled=false
-        typingTextarea.focus()
+        // await setTimeout(() => {
+            myProgressBar.value="0"
+            opponentProgressBar.value="0"
+            testPara.textContent=""
+            liveTyping.textContent=""
+            typingTextarea.value=""
+            document.getElementById("winOrLose").innerHTML=""
+            typingTextarea.disabled=false
+            typingTextarea.focus()
+        // }, 10);
+
     })
 
-    socket.on('updateTestPara',(msg)=>{
-       
-        testPara.innerHTML=msg
+    let btn1=document.getElementById('btn1')
+    let btn2=document.getElementById('btn2')
+    let btn3=document.getElementById('btn3')
+    let btn4=document.getElementById('btn4')
+
+    socket.on('updateTestPara',async (msg)=>{
+    
+            btn1.disabled=true
+            btn2.disabled=true
+            btn3.disabled=true 
+            btn4.disabled=true
+            document.getElementById('loadingGIF').style.display="block"
+        await setTimeout(() => {
+            testPara.innerHTML=msg
+            btn1.disabled=false
+            btn2.disabled=false
+            btn3.disabled=false 
+            btn4.disabled=false
+            document.getElementById('loadingGIF').style.display="none"
+
+        }, 2500);
+
+
     })
 
     socket.on('updateOpponentProgress',(opponentScore)=>{
-        console.log(opponentScore)
         opponentProgressBar.value=opponentScore
     })
 
     socket.on('updateMyProgress',(myScore)=>{
-        
         myProgressBar.value=myScore
     })
 
@@ -241,14 +274,14 @@
         opponentWinsCount++
         opponentWins.value=opponentWinsCount
         typingTextarea.disabled=true
-        document.getElementById('winOrLose').innerHTML="<h1>You lose :(</h1>"
+        document.getElementById('winOrLose').innerHTML="<h1 style='color:yellow;'>You lose :(</h1>"
     })
 
     socket.on('win',()=>{
         myWinsCount++
         myWins.value=myWinsCount
         typingTextarea.disabled=true
-        document.getElementById('winOrLose').innerHTML="<h1>You win :)</h1>"
+        document.getElementById('winOrLose').innerHTML="<h1 style='color:yellow;'>You win :)</h1>"
     })
 
     socket.on('disconnected',(msg)=>{

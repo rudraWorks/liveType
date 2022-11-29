@@ -18,10 +18,11 @@ app.set('view engine','ejs')
 app.use(express.json())
 app.use(express.urlencoded({extended:true}))
 app.use(express.static(__dirname+"/public"))
-
-
+ 
+ 
 app.use(generalRouter)
 
+io.set('transports', ['websocket'])
 io.on('connection',(socket)=>{
 
     // io.emit('test','hi')
@@ -43,7 +44,6 @@ io.on('connection',(socket)=>{
 
         let testPara=""
 
-        
         socket.join(room) 
         // console.log(username+" "+room)
         let t=getUser(socket.id) 
@@ -52,6 +52,7 @@ io.on('connection',(socket)=>{
         io.to(t.room).emit('updateRoomInfo',t,userInRoom)
         socket.broadcast.to(t.room).emit('connected',t.username+" joined the room!")
  
+        io.set('transports', ['websocket'])
         socket.on('startTest',(noOfWords)=>{   
             // console.log(socket.id) 
             io.to(getUser(socket.id).room).emit('clear')
