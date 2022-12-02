@@ -2,7 +2,7 @@
 
 <style>
     #roomContainer{
-        background:#9eab92;
+        background:#fffb7f;
         width: 100%;
         height: 100%;
         display: flex;
@@ -25,7 +25,7 @@
         text-align: left;
         user-select: none;
         font-size: larger;
-        background-color: lightgreen;
+        background-color: #e0f1e0;
 ]    }
     #rightPanel{
         margin-top: 10px;
@@ -71,13 +71,13 @@
     #typingTextarea{
         font-size: 20px;
     }
-    
+
 </style>
 
 <div id="roomContainer">
 
     <div id="leftPanel">
-        <div id="roomName"></div>
+        <div id="roomName" style="background-color: rgb(110, 110, 116);padding:5px;color:white;"></div>
         <hr>
         <br>
       
@@ -90,9 +90,9 @@
         </div>
 <br>
             <hr>
-            <span>Quick chat</span>
+            <span style="font-size: 20px ;">Quick chat 💬 </span>
 
-        <div id="chats" style="display: flex;flex-direction:column;width: 90%;margin-top: 20px; background-color: #dae1e95e;       border-style: groove;
+        <div id="chats" style="display: flex;flex-direction:column;width: 90%;margin-top: 2px; background-color: #dae1e95e;       border-style: groove;
         ">
             
             
@@ -115,24 +115,25 @@
             <div>
                 <span>Opponent</span>  <progress id="opponentProgressBar" value="0" min="0" max="100"></progress>
             </div>
-        </div>
+        </div>  
 
+        <div id="thumbUpDown" style="font-size: 50px;height: 40px;margin-bottom: 40px;"></div>
         <div id="testPara"></div>
 
         <div id="myTyping">
              <div id="liveTyping" style="display: none ;"></div>
-            <textarea disabled  placeholder="type here.." name="" id="typingTextarea" cols="30" rows="6" style="resize: vertical;padding:5px;"></textarea>
+            <textarea disabled  placeholder="type here.." name="" id="typingTextarea"  style="resize: vertical;width:100%;padding:5px;"></textarea>
         </div>
         <div>
-            <button id="btn1"  onclick="startTest10()" style="width: 100px;">10 words</button>
-            <button id="btn2" onclick="startTest30()" style="width: 100px;">30 words</button>
-            <button id="btn3" onclick="startTest50()" style="width: 100px;">50 words</button>
-            <button id="btn4" onclick="startTest70()" style="width: 100px;">70 words</button>
+            <button class="button" id="btn1"  onclick="startTest10()" style="width: 100px;">10 words</button>
+            <button class="button" id="btn2" onclick="startTest30()" style="width: 100px;">30 words</button>
+            <button class="button" id="btn3" onclick="startTest50()" style="width: 100px;">50 words</button>
+            <button class="button" id="btn4" onclick="startTest70()" style="width: 100px;">70 words</button>
 
         </div>
-        <div id="loadingGIF"  style="border-style: groove;background-color: yellow;vertical-align: middle;position:absolute;top: 30%;display: none;">
+        <div id="loadingGIF"  style="border-style: groove;color: rgb(8, 2, 43);font-weight: 900;background-color: rgb(255, 255, 255);vertical-align: middle;position:absolute;top: 20%;display: none;width: 300px;height: 300px;">
             <h1>Get ready!!</h1>
-            <span style="font-weight: 100;font-size:larger;" id="noOfWords"></span><br>
+            <span style="font-weight: 100;font-size:larger;" id="noOfWords"></span><br><br>
             <img src="https://media.tenor.com/G7LfW0O5qb8AAAAC/loading-gif.gif" width="200" height="200"  alt="">
         </div>
     </div>
@@ -166,7 +167,7 @@
     socket.emit('join',{username,room},(error)=>{
         if(error){
             alert(error.error)
-            location.href='/'
+            location.href='/join'
         }
     })
 
@@ -211,7 +212,7 @@
                 q=q+"<span style='background:red;color:white;'>"+testParaString[i]+"</span>"
 
             }
-            else if(i<typingSoFar.length)q+="<span style='background:#6fbb6f ;color:black;'>"+testParaString[i]+"</span>";
+            else if(i<typingSoFar.length)q+="<span style='background:#abc5ab ;color:black;'>"+testParaString[i]+"</span>";
             
             else q+="<span style='background:tranparent;color:black;'>"+testParaString[i]+"</span>";
             
@@ -220,7 +221,7 @@
         testPara.innerHTML=q
         socket.emit('updateLiveTyping',typingSoFar,testParaString)
 
-        
+
     })
 
    
@@ -233,6 +234,7 @@
             liveTyping.textContent=""
             typingTextarea.value=""
             document.getElementById("winOrLose").innerHTML=""
+            document.getElementById("thumbUpDown").textContent=""
 
         // }, 10);
 
@@ -268,25 +270,42 @@
     })
 
     socket.on('updateOpponentProgress',(opponentScore)=>{
+
         opponentProgressBar.value=opponentScore
+
+        let myScoree = parseFloat(myProgressBar.value)
+        let opponentScoree = parseFloat(opponentProgressBar.value)
+        if(myScoree>opponentScoree){
+            document.getElementById('thumbUpDown').textContent="👍";
+        }
+        else if(myScoree<opponentScoree) document.getElementById('thumbUpDown').textContent="👎";
+        else document.getElementById('thumbUpDown').textContent="🤝"
+
     })
 
     socket.on('updateMyProgress',(myScore)=>{
         myProgressBar.value=myScore
+        let myScoree = parseFloat(myProgressBar.value)
+        let opponentScoree = parseFloat(opponentProgressBar.value)
+        if(myScoree>opponentScoree){
+            document.getElementById('thumbUpDown').textContent="👍";
+        }
+        else if(myScoree<opponentScoree) document.getElementById('thumbUpDown').textContent="👎";
+        else document.getElementById('thumbUpDown').textContent="🤝"
     })
 
     socket.on('lose',()=>{
         opponentWinsCount++
         opponentWins.value=opponentWinsCount
         typingTextarea.disabled=true
-        document.getElementById('winOrLose').innerHTML="<h1 style='color:yellow;'>You lose :(</h1>"
+        document.getElementById('winOrLose').innerHTML="<h1 style='color:black;font-weight:black;font-size:50px;'>You lose 😔</h1>"
     })
 
     socket.on('win',()=>{
         myWinsCount++
         myWins.value=myWinsCount
         typingTextarea.disabled=true
-        document.getElementById('winOrLose').innerHTML="<h1 style='color:yellow;'>You win :)</h1>"
+        document.getElementById('winOrLose').innerHTML="<h1 style='color:black;font-weight:900;font-size:50px;'>You win 🥳</h1>"
     })
 
     socket.on('disconnected',(msg)=>{

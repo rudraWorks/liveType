@@ -3,7 +3,10 @@ const generalControllers = require('../controllers/generalControllers')
 const router =Router()
 
 
-router.get('/',generalControllers.create_join)
-router.get('/join',generalControllers.join)
+router.get('/',generalControllers.home)
+router.get('/join',generalControllers.create_join)
+router.get('/arena',generalControllers.arena)
+
+
 
 module.exports = router

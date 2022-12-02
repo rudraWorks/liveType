@@ -34,6 +34,12 @@ io.on('connection',(socket)=>{
         }
         const isAdded = addUser(socket.id,username,room)
         const roomLength = getUsersInRoom(room).length
+        if(username.length>20){
+            return callback({error:"username length too large, must be less than 21 characters"})
+        }
+        if(room.length>20){
+            return callback({error:"room length too large, must be less than 21 characters"})
+        }
         if(isAdded==0)
         {
             return callback({error:'this username already exist in this room'})
@@ -56,7 +62,7 @@ io.on('connection',(socket)=>{
         socket.on('startTest',(noOfWords)=>{   
             // console.log(socket.id) 
             io.to(getUser(socket.id).room).emit('clear')
-            let p="";  
+            let p="";    
             for(let i=0;i<noOfWords;++i) 
                 p+=words[randomIntFromInterval(0,words.length-1)]+" ";
             p = p.trim()
@@ -82,7 +88,7 @@ io.on('connection',(socket)=>{
             score=100*(score/totalScore)
             socket.broadcast.to(getUser(socket.id).room).emit('updateOpponentProgress',score)
             socket.emit('updateMyProgress',score)
-            // console.log(userPara+" - "+testPara)
+            // console.log(userPara+" - "+testPara)    
         })
 
         socket.on('sendMessage',(msg,id)=>{
@@ -98,8 +104,12 @@ io.on('connection',(socket)=>{
         io.to(user.room).emit('disconnected',user.username+" left the room!")
     })
 
-})     
+})      
 
+
+app.get('*',(req,res)=>{
+    res.send("<h1>404 page not found</h1>")
+})
 let port = process.env.PORT || 3000     
 server.listen(port,()=>{ 
     console.log('listening to port '+port) 
