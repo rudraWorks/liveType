@@ -1,16 +1,59 @@
 <%- include('../partials/upper.ejs') %>
 
 <style>
-    #image{
+    #imageContainer{
         display: flex;
         margin:30px;
+        height: 100%;
     }
-
+    #image{
+        width: 50%;
+        border-right: 1px solid black;
+    }
+    #about{
+        width: 50%;
+        text-align: left;
+        margin-left: 20px;
+        /* background-color: lightblue; */
+    }
 </style>
 
-<div id="image">
-    <img  src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgIlQiNrsfEBRO6AIwVFWpm8ODUNLChVrudun6lt8dcnClUWI0inwLCivb_1rMc3W0m2ojMMdZ8IWcxpM7BfnOpnY8tYOpapxPAXTFogZJHNv68ineoj56i0Jtu13wniB04qQx-egQ5bdU67_pvlY7_w-YgoiB2WK65iKVbC_Wbd8wGdGu9FVJEcbaIdw/w640-h402/liveType.PNG" alt="">
- 
+<div id="imageContainer">
+    <div id="image">
+        <img  src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEgIlQiNrsfEBRO6AIwVFWpm8ODUNLChVrudun6lt8dcnClUWI0inwLCivb_1rMc3W0m2ojMMdZ8IWcxpM7BfnOpnY8tYOpapxPAXTFogZJHNv68ineoj56i0Jtu13wniB04qQx-egQ5bdU67_pvlY7_w-YgoiB2WK65iKVbC_Wbd8wGdGu9FVJEcbaIdw/w640-h402/liveType.PNG" alt="">
+    </div>
+    <div id="about">
+        <ul>
+
+            <li> <b><u>What is liveType?</u> </b>
+                <br>
+                    liveType is a web application used for real-time typing competition between two players. Users can join room from any corner of the globe and compete as well as chat in real-time. 
+            </li>
+<br><br>
+            <li> <b><u>Why liveType?</u> </b>
+                <br>
+                    Many people use to test their typing speed on various wonderful platforms like monkeytype.com, typerush.com etc. But what they miss is real-time rivalry between their friends. Many studies have already proven that motivation to do a task comes when there is a win-reward system, so is the case with liveType, you feel overwhelmed beating your friend in a close compitition.
+            </li>
+
+            <br><br>
+            <li> <b><u>Project inception</u> </b>
+                <br>
+                    The idea to build the project came to my mind when I was quite bored with binged typing on monkeytype.com. <a href="https://monkeytype.com/profile/merudra" target="_blank"><u>my profile on monkeytype</u> </a>. 
+                    <br>
+                    The first commit was made on 27 <sup>th</sup> of November 2022 and it took three days to build the first substantial model.
+            </li>
+
+
+            <br><br>
+            <li> <b><u>Vulnerabilities to be probed</u> </b>
+                <br>
+                Although socket.io uses long polling for maintaining constant communication between server and the client, it has been observed that connection may broke on delayed inactivity from client's end. Thus it is advised to refresh the window when this happens.
+            </li>
+
+
+
+        </ul>
+    </div>
 </div>
 
 
