@@ -9,7 +9,11 @@ body{
     height: 100%;
 
 }
-
+#mainContainer::-webkit-scrollbar {
+    display: none;
+    -ms-overflow-style: none; 
+    scrollbar-width: none;  
+}
 
 #mainContainer{
     width: 80%;
@@ -17,6 +21,7 @@ body{
     height: 100vh;
     display: flex;
     flex-direction: column;
+    overflow-y: scroll;
 }
 #navBar{
     height: 50px;
