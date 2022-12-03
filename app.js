@@ -119,7 +119,7 @@ io.on('connection',(socket)=>{
 
 
 app.get('*',(req,res)=>{
-    res.send("<h1>404 page not found</h1>")
+    res.send("<h1>404 page not found</h1>") 
 })
 let port = process.env.PORT || 3000     
 server.listen(port,()=>{ 
