@@ -7,7 +7,18 @@ const {addUser,removeUser,getUser,getUsersInRoom} = require('./utils/users')
 const app = express()
 
 const server = http.createServer(app)
-const io = socketio(server) 
+const io = socketio(server,{
+    upgradeTimeout:30000,
+    pingTimeout:60000,
+    pingInterval:10000,
+    serverClient:true,
+    agent:false,
+    cookie:false,
+    rejectUnauthorized:false,
+    reconnectionDelay:1000,
+    reconnectionDelayMax:5000,
+    maxHttpBufferSize:100000000
+}) 
 
 const words = ["the","of","and","a","to","in","is","you","that","it","he","was","for","on","are","as","with","his","they","I","at","be","this","have","from","or","one","had","by","word","but","not","what","all","were","we","when","your","can","said","there","use","an","each","which","she","do","how","their","if","will","up","other","about","out","many","then","them","these","so","some","her","would","make","like","him","into","time","has","look","two","more","write","go","see","number","no","way","could","people","my","than","first","water","been","call","who","oil","its","now","find","long","down","day","did","get","come","made","may","part"];
 function randomIntFromInterval(min, max) { // min and max included 
@@ -96,10 +107,10 @@ io.on('connection',(socket)=>{
             io.to(t.room).emit('showMessage',msg,t)
         })
     }) 
-    socket.on('disconnect',()=>{           
+    socket.on('disconnect',(reason)=>{           
         let user = removeUser(socket.id)
         let userInRoom = getUsersInRoom(user.room)
-      
+        // console.log(reason)
         io.to(user.room).emit('updateRoomInfo',user,userInRoom)
         io.to(user.room).emit('disconnected',user.username+" left the room!")
     })

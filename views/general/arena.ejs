@@ -162,7 +162,19 @@
     let opponentWinsCount=0
 
     // const socket =  io();
-    var socket = io({transports: ['websocket'], upgrade: false})
+    var socket = io({
+        transports: ['websocket'],
+         allowUpgrades: false,
+         reconnection:false,
+         reconnectionDelay:1000,
+         reconnectionDelayMax:5000,
+         reconnectionAttempts:Infinity,
+         secure:true,
+         rejectionUnauthorized:false,
+         forceNew:true,
+         timeout:60000,
+         pingTimeout:60000
+        })
 
     socket.emit('join',{username,room},(error)=>{
         if(error){
