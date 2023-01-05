@@ -4,6 +4,6 @@ let p=[]
 for(let i=0;i<words.length;++i){
     if(words[i].length<=5){
         // console.log(words[i]+",")
-        process.stdout.write(words[i]+",")
+        process.stdout.write("'"+words[i]+"',")
     }
 }
